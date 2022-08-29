@@ -1,10 +1,12 @@
 package main
 
 import (
+	natsDomain "chat/domain/nats"
 	natsHandler "chat/internal/nats/handler"
 	"chat/internal/user/userHandler"
 	"chat/utils"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -25,7 +27,7 @@ func main() {
 	natshandler := natsHandler.NewHandler(UseCases.Nats)
 	userhandler := userHandler.NewHandler(UseCases.User)
 
-	fmt.Println("1: SignUp.\n2: SingIn.")
+	fmt.Println("1: SignUp.\n2: SignIn.")
 	opt := utils.Read()
 	switch opt {
 	case "1":
@@ -34,25 +36,67 @@ func main() {
 		}
 		fallthrough
 	case "2":
-		if err := userhandler.SignIn(); err != nil {
-			fmt.Println("1: Send private message.\n2: Join group.\n3: Create a group.")
-			option := utils.Read()
-			switch option {
-			case "1":
-				sub := natshandler.JoinPv()
-				c.Sub(sub)
-				for {
-					if msg.Text != "" {
-						text := NewMessage(msg)
-						Pub(nc, text)
-					}
+		user, err := userhandler.SignIn()
+		if err != nil {
+			fmt.Println("err")
+		}
+		fmt.Println("1: Send private message.\n2: Join group.\n3: Create a group.")
+		option := utils.Read()
+		switch option {
+		case "1":
+			form := natshandler.JoinPv(user.UserName)
+			c.Sub(user.UserName)
+			c.Sub(form.Sub)
+			for {
+				text := utils.Read()
+				text = user.UserName + ": " + text
+				msg := natsDomain.Message{
+					Message: text,
+					Sub:     form.Sub,
+					ChatID:  form.ID,
+					Time:    time.Now(),
 				}
-			case "2":
-				sub := natshandler.JoinGp()
-				c.Sub(sub)
-			case "3":
-				sub := natshandler.CreateGp()
-				c.Sub(sub)
+				c.Pub(msg)
+				if err := natshandler.CreateMsg(msg); err != nil {
+					fmt.Println(err)
+				}
+			}
+		case "2":
+			form := natshandler.JoinGp()
+			c.Sub(form.Sub)
+			for {
+				text := utils.Read()
+				text = user.UserName + ": " + text
+				msg := natsDomain.Message{
+					Message: text,
+					Sub:     form.Sub,
+					ChatID:  form.ID,
+					Time:    time.Now(),
+				}
+				c.Pub(msg)
+				if err := natshandler.CreateMsg(msg); err != nil {
+					fmt.Println(err)
+				}
+			}
+		case "3":
+			form, err := natshandler.CreateGp()
+			if err != nil {
+				fmt.Println(err)
+			}
+			c.Sub(form.Sub)
+			for {
+				text := utils.Read()
+				text = user.UserName + ": " + text
+				msg := natsDomain.Message{
+					Message: text,
+					Sub:     form.Sub,
+					ChatID:  form.ID,
+					Time:    time.Now(),
+				}
+				c.Pub(msg)
+				if err := natshandler.CreateMsg(msg); err != nil {
+					fmt.Println(err)
+				}
 			}
 		}
 	}

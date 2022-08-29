@@ -21,6 +21,6 @@ type UserUseCase interface {
 }
 
 type UserHandler interface {
-	SignIn() error
+	SignIn() (User, error)
 	SignUp() error
 }

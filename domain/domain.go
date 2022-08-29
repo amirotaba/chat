@@ -7,8 +7,11 @@ import (
 )
 
 type DataBase struct {
-	Collection *mongo.Collection
-	Client     *mongo.Client
+	User   *mongo.Collection
+	Pv     *mongo.Collection
+	Gp     *mongo.Collection
+	Msg    *mongo.Collection
+	Client *mongo.Client
 }
 
 type UseCases struct {

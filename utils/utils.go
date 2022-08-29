@@ -46,10 +46,16 @@ func Connection() domain.DataBase {
 	}
 
 	userCollection := client.Database(dbName).Collection("users")
+	pvCollection := client.Database(dbName).Collection("pv")
+	gpCollection := client.Database(dbName).Collection("gp")
+	msgCollection := client.Database(dbName).Collection("msg")
 
 	Db := domain.DataBase{
-		Collection: userCollection,
-		Client:     client,
+		User:   userCollection,
+		Pv:     pvCollection,
+		Gp:     gpCollection,
+		Msg:    msgCollection,
+		Client: client,
 	}
 
 	fmt.Println("Successfully connected and pinged.")
@@ -58,8 +64,8 @@ func Connection() domain.DataBase {
 
 func NewRepository(Db domain.DataBase) domain.Repositories {
 	repository := domain.Repositories{
-		User: userRepo.NewMongoRepository(Db.Collection),
-		Nats: natsRepo.NewMongoRepository(Db.Collection),
+		User: userRepo.NewMongoRepository(Db.User),
+		Nats: natsRepo.NewMongoRepository(Db),
 	}
 	return repository
 }

@@ -4,6 +4,7 @@ import (
 	"chat/domain/nats"
 	"fmt"
 	"github.com/nats-io/nats.go"
+	"log"
 )
 
 type Client struct {
@@ -19,18 +20,15 @@ func New() (*Client, error) {
 	return &Client{cn: conn}, nil
 }
 
-func (c *Client) Sub(sub string) string {
-	var out string
+func (c *Client) Sub(sub string) {
 	c.cn.Subscribe(sub, func(msg *nats.Msg) {
-		out = string(msg.Data)
+		log.Println(string(msg.Data))
 	})
-	return out
 }
 
-func (c *Client) Pub(form natsDomain.MessageForm) error {
+func (c *Client) Pub(form natsDomain.Message) {
 	err := c.cn.Publish(form.Sub, []byte(form.Message))
 	if err != nil {
-		return err
+		log.Println(err)
 	}
-	return nil
 }

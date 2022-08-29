@@ -16,33 +16,53 @@ func NewHandler(u natsDomain.NatsUseCase) *Handler {
 	}
 }
 
-func (m *Handler) JoinPv() string {
+func (m *Handler) JoinPv(username string) natsDomain.Join {
 	fmt.Println("enter the username of user that you want to send message: ")
-	username := utils.Read()
-	message, err := m.UseCase.JoinPv(username)
+	user2 := utils.Read()
+	form, err := m.UseCase.JoinPv(&natsDomain.CreatePv{
+		User1: username,
+		User2: user2,
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(message)
-	return username
+	form.Sub = user2
+	for i := range form.Message {
+		fmt.Println(form.Message[i].Message)
+	}
+	return form
 }
 
-func (m *Handler) JoinGp() string {
+func (m *Handler) JoinGp() natsDomain.Join {
 	fmt.Println("enter the group name of group that you want to join: ")
 	name := utils.Read()
 
-	message, err := m.UseCase.JoinGp(name)
+	form, err := m.UseCase.JoinGp(name)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(message)
-	return name
+	form.Sub = name
+	for i := range form.Message {
+		fmt.Println(form.Message[i].Message)
+	}
+	return form
 }
 
-func (m *Handler) CreateGp() string {
+func (m *Handler) CreateGp() (natsDomain.Join, error) {
 	fmt.Println("enter the group name that you want to create: ")
 	name := utils.Read()
 
-	m.UseCase.CreateGp(name)
-	return name
+	msg, err := m.UseCase.CreateGp(name)
+	if err != nil {
+		return natsDomain.Join{}, err
+	}
+	msg.Sub = name
+	return msg, nil
+}
+
+func (m *Handler) CreateMsg(form natsDomain.Message) error {
+	if err := m.UseCase.CreateMsg(form); err != nil {
+		return err
+	}
+	return nil
 }

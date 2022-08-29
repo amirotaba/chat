@@ -16,17 +16,18 @@ func NewHandler(u userDomain.UserUseCase) userDomain.UserHandler {
 	}
 }
 
-func (m *Handler) SignIn() error {
+func (m *Handler) SignIn() (userDomain.User, error) {
 	var user userDomain.User
+	fmt.Println("SignIn: ")
 	fmt.Println("enter your username: ")
 	user.UserName = utils.Read()
 	fmt.Println("enter your password: ")
 	user.PassWord = utils.Read()
 
 	if err := m.UseCase.SignIn(user); err != nil {
-		return err
+		return userDomain.User{}, err
 	}
-	return nil
+	return user, nil
 }
 
 func (m *Handler) SignUp() error {
