@@ -2,7 +2,6 @@ package natsRepo
 
 import (
 	"chat/domain"
-	natsDomain "chat/domain/nats"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,7 +15,7 @@ type mongoRepository struct {
 	Msg *mongo.Collection
 }
 
-func NewMongoRepository(c domain.DataBase) natsDomain.NatsRepository {
+func NewMongoRepository(c domain.DataBase) domain.NatsRepository {
 	return &mongoRepository{
 		Pv:  c.Pv,
 		Gp:  c.Gp,
@@ -25,7 +24,7 @@ func NewMongoRepository(c domain.DataBase) natsDomain.NatsRepository {
 
 }
 
-func (m mongoRepository) CreatePv(form natsDomain.Private) error {
+func (m mongoRepository) CreatePv(form domain.Private) error {
 	_, err := m.Pv.InsertOne(context.Background(), form)
 
 	if err != nil {
@@ -35,24 +34,24 @@ func (m mongoRepository) CreatePv(form natsDomain.Private) error {
 	return nil
 }
 
-func (m mongoRepository) ReadPv(sub string) (natsDomain.Private, error) {
+func (m mongoRepository) ReadPv(sub string) (domain.Private, error) {
 	filter := bson.D{{"sub", sub}}
 	cur, err := m.Pv.Find(context.Background(), filter)
 
 	if err != nil {
-		return natsDomain.Private{}, err
+		return domain.Private{}, err
 	}
 
 	defer cur.Close(context.Background())
 
-	var results []natsDomain.Private
+	var results []domain.Private
 
 	for cur.Next(context.Background()) {
 
-		var result natsDomain.Private
+		var result domain.Private
 
 		if err = cur.Decode(&result); err != nil {
-			return natsDomain.Private{}, err
+			return domain.Private{}, err
 		}
 
 		results = append(results, result)
@@ -61,10 +60,10 @@ func (m mongoRepository) ReadPv(sub string) (natsDomain.Private, error) {
 	if results != nil {
 		return results[0], nil
 	}
-	return natsDomain.Private{}, errors.New("not found! ")
+	return domain.Private{}, errors.New("not found! ")
 }
 
-func (m mongoRepository) CreateGp(form natsDomain.Group) error {
+func (m mongoRepository) CreateGp(form domain.Group) error {
 	_, err := m.Gp.InsertOne(context.Background(), form)
 
 	if err != nil {
@@ -74,24 +73,24 @@ func (m mongoRepository) CreateGp(form natsDomain.Group) error {
 	return nil
 }
 
-func (m mongoRepository) ReadGp(sub string) (natsDomain.Group, error) {
+func (m mongoRepository) ReadGp(sub string) (domain.Group, error) {
 	filter := bson.D{{"sub", sub}}
 	cur, err := m.Gp.Find(context.Background(), filter)
 
 	if err != nil {
-		return natsDomain.Group{}, err
+		return domain.Group{}, err
 	}
 
 	defer cur.Close(context.Background())
 
-	var results []natsDomain.Group
+	var results []domain.Group
 
 	for cur.Next(context.Background()) {
 
-		var result natsDomain.Group
+		var result domain.Group
 
 		if err = cur.Decode(&result); err != nil {
-			return natsDomain.Group{}, err
+			return domain.Group{}, err
 		}
 
 		results = append(results, result)
@@ -100,10 +99,10 @@ func (m mongoRepository) ReadGp(sub string) (natsDomain.Group, error) {
 	if results != nil {
 		return results[0], nil
 	}
-	return natsDomain.Group{}, errors.New("not found! ")
+	return domain.Group{}, errors.New("not found! ")
 }
 
-func (m mongoRepository) CreateMsg(form natsDomain.Message) error {
+func (m mongoRepository) CreateMsg(form domain.Message) error {
 	_, err := m.Msg.InsertOne(context.Background(), form)
 
 	if err != nil {
@@ -113,7 +112,7 @@ func (m mongoRepository) CreateMsg(form natsDomain.Message) error {
 	return nil
 }
 
-func (m mongoRepository) ReadMsg(id primitive.ObjectID) ([]natsDomain.Message, error) {
+func (m mongoRepository) ReadMsg(id primitive.ObjectID) ([]domain.Message, error) {
 	filter := bson.D{{"chatid", id}}
 	cur, err := m.Msg.Find(context.Background(), filter)
 
@@ -123,11 +122,11 @@ func (m mongoRepository) ReadMsg(id primitive.ObjectID) ([]natsDomain.Message, e
 
 	defer cur.Close(context.Background())
 
-	var results []natsDomain.Message
+	var results []domain.Message
 
 	for cur.Next(context.Background()) {
 
-		var result natsDomain.Message
+		var result domain.Message
 
 		if err = cur.Decode(&result); err != nil {
 			return nil, err

@@ -1,7 +1,7 @@
-package nats
+package PubSub
 
 import (
-	"chat/domain/nats"
+	"chat/domain"
 	"fmt"
 	"github.com/nats-io/nats.go"
 	"log"
@@ -26,7 +26,7 @@ func (c *Client) Sub(sub string) {
 	})
 }
 
-func (c *Client) Pub(form natsDomain.Message) {
+func (c *Client) Pub(form domain.Message) {
 	err := c.cn.Publish(form.Sub, []byte(form.Message))
 	if err != nil {
 		log.Println(err)

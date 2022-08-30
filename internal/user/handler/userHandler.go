@@ -1,23 +1,23 @@
 package userHandler
 
 import (
-	"chat/domain/user"
+	"chat/domain"
 	"chat/utils"
 	"fmt"
 )
 
 type Handler struct {
-	UseCase userDomain.UserUseCase
+	UseCase domain.UserUseCase
 }
 
-func NewHandler(u userDomain.UserUseCase) userDomain.UserHandler {
+func NewHandler(u domain.UserUseCase) domain.UserHandler {
 	return &Handler{
 		UseCase: u,
 	}
 }
 
-func (m *Handler) SignIn() (userDomain.User, error) {
-	var user userDomain.User
+func (m *Handler) SignIn() (domain.User, error) {
+	var user domain.User
 	fmt.Println("SignIn: ")
 	fmt.Println("enter your username: ")
 	user.UserName = utils.Read()
@@ -25,13 +25,13 @@ func (m *Handler) SignIn() (userDomain.User, error) {
 	user.PassWord = utils.Read()
 
 	if err := m.UseCase.SignIn(user); err != nil {
-		return userDomain.User{}, err
+		return domain.User{}, err
 	}
 	return user, nil
 }
 
 func (m *Handler) SignUp() error {
-	var user userDomain.User
+	var user domain.User
 	fmt.Println("enter your name: ")
 	user.UserName = utils.Read()
 	fmt.Println("enter your password: ")

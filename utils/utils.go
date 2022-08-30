@@ -3,9 +3,9 @@ package utils
 import (
 	"bufio"
 	"chat/domain"
-	"chat/internal/nats"
-	natsRepo "chat/internal/nats/repository/mongo"
-	natsUsecase "chat/internal/nats/usecase"
+	"chat/internal/nats/PubSub"
+	"chat/internal/nats/repository/mongo"
+	"chat/internal/nats/usecase"
 	"chat/internal/user/repository/mongo"
 	"chat/internal/user/usecase"
 	"context"
@@ -18,8 +18,8 @@ import (
 	"strings"
 )
 
-func ConnNats() *nats.Client {
-	c, err := nats.New()
+func ConnNats() *PubSub.Client {
+	c, err := PubSub.New()
 	if err != nil {
 		log.Println("Connecting to message broker failed")
 	}

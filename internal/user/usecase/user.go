@@ -2,21 +2,20 @@ package userUseCase
 
 import (
 	"chat/domain"
-	userDomain "chat/domain/user"
 	"errors"
 )
 
 type Usecase struct {
-	UserRepo userDomain.UserRepository
+	UserRepo domain.UserRepository
 }
 
-func NewUseCase(r domain.Repositories) userDomain.UserUseCase {
+func NewUseCase(r domain.Repositories) domain.UserUseCase {
 	return &Usecase{
 		UserRepo: r.User,
 	}
 }
 
-func (a *Usecase) Create(user userDomain.User) error {
+func (a *Usecase) Create(user domain.User) error {
 	res, _ := a.UserRepo.Read(user.UserName)
 	if res.UserName != "" {
 		return errors.New("this username is taken")
@@ -29,7 +28,7 @@ func (a *Usecase) Create(user userDomain.User) error {
 	return nil
 }
 
-func (a *Usecase) SignIn(user userDomain.User) error {
+func (a *Usecase) SignIn(user domain.User) error {
 	u, err := a.UserRepo.Read(user.UserName)
 	if err != nil {
 		return err

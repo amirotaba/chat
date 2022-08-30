@@ -1,9 +1,9 @@
 package main
 
 import (
-	natsDomain "chat/domain/nats"
-	natsHandler "chat/internal/nats/handler"
-	"chat/internal/user/userHandler"
+	"chat/domain"
+	"chat/internal/nats/handler"
+	"chat/internal/user/handler"
 	"chat/utils"
 	"fmt"
 	"time"
@@ -50,7 +50,7 @@ func main() {
 			for {
 				text := utils.Read()
 				text = user.UserName + ": " + text
-				msg := natsDomain.Message{
+				msg := domain.Message{
 					Message: text,
 					Sub:     form.Sub,
 					ChatID:  form.ID,
@@ -67,7 +67,7 @@ func main() {
 			for {
 				text := utils.Read()
 				text = user.UserName + ": " + text
-				msg := natsDomain.Message{
+				msg := domain.Message{
 					Message: text,
 					Sub:     form.Sub,
 					ChatID:  form.ID,
@@ -87,7 +87,7 @@ func main() {
 			for {
 				text := utils.Read()
 				text = user.UserName + ": " + text
-				msg := natsDomain.Message{
+				msg := domain.Message{
 					Message: text,
 					Sub:     form.Sub,
 					ChatID:  form.ID,
